@@ -3,3 +3,8 @@ This is a simple DJ Timer for when DJ's Tag. It has different modes.
 After the timer passes the desired time, you can reset the clock with Analog pin 2.
 Pin 0 and Pin 1 are used for setting the time limites. i.e. A0 is more time, A1 is less time.
 By default the timer is set at 15min.
+
+Part List: 	
+  Adafruit Standard LCD 20x4
+  Adafruit Feather M0
+  tacktile buttons
