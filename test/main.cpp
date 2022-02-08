@@ -5,7 +5,6 @@
 millisDelay SecondsDelay;
 millisDelay DJTimerLCD;
 millisDelay DJTimerLCD2;
-millisDelay SerialDelay;
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal_I2C lcd(0x27,20,4);
 signed short minutes, seconds;
@@ -24,12 +23,11 @@ void setup() {
   lcd.print("by");
   lcd.setCursor(5,3);
   lcd.print("Moon Disco");
-  while (analogRead(A2) <= 1000);
+  while (analogRead(A3) <= 1000);
   lcd.clear();
   SecondsDelay.start(1000);
   DJTimerLCD.start(1000);
   DJTimerLCD2.start(1000);
-  SerialDelay.start(1000);
 }
 void DJTimerSettings() {
   if (analogRead(A0) >= 1023 ) {
@@ -47,14 +45,8 @@ void DJTimerSettings() {
     minutes = 0;
     seconds = 0;
     lcd.backlight();
-  }
-  if (analogRead(A2) >= 1023 and minutes >= djtimer ) {
-    delay(100);
-    lcd.clear();
-    minutes = 0;
-    seconds = 0;
-    lcd.backlight();
-  }
+    }
+
   if (djtimer == 35){
     djtimer = 60;
   }
@@ -67,7 +59,15 @@ void DJTimerSettings() {
     djtimer = 15;
   }
 }
-void mainDJtimer() {
+void ResetTime() {
+  if (analogRead(A2) >= 900 ) {
+    lcd.clear();
+    minutes = 0;
+    seconds = 0;
+    lcd.backlight();
+  }
+}
+void loop() {
   DJTimerSettings();
   lcd.setCursor(4,0);
   lcd.print("EVOLVE Music");
@@ -84,13 +84,15 @@ void mainDJtimer() {
         seconds = 0;
         minutes ++;
       }
-      if (minutes >= djtimer){
+      if (seconds >= djtimer){
+        lcd.clear();
         if (DJTimerLCD.justFinished()){
           DJTimerLCD2.start(250);
           lcd.clear();
           lcd.setCursor(5, 2);
           lcd.print("NEXT DJ!!");
           lcd.noBacklight();
+          ResetTime();
         }
         if (DJTimerLCD2.justFinished()){
           lcd.clear();
@@ -98,24 +100,8 @@ void mainDJtimer() {
           lcd.setCursor(5, 2);
           lcd.print("NEXT DJ!!");
           lcd.backlight();
+          ResetTime();
         }
       }
     }
-}
-void Serial_Delay() {
-  if (SerialDelay.justFinished()) {
-    SerialDelay.repeat();
-    Serial.print("A0: ");
-    Serial.println(analogRead(A0));
-    Serial.print("A1: ");
-    Serial.println(analogRead(A1));
-    Serial.print("A2: ");
-    Serial.println(analogRead(A2));
-    Serial.println(" ");
-  }
-}
-
-void loop() {
-  Serial_Delay();
-  mainDJtimer();
 }
