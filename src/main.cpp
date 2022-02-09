@@ -31,22 +31,25 @@ void setup() {
   lcd.print("Moon Disco");
   while (analogRead(A2) <= 1000);
   lcd.clear();
+  lcd.noBacklight();
+  delay(500);
+  lcd.backlight();
   SecondsDelay.start(1000);
   DJTimerLCD.start(1000);
   DJTimerLCD2.start(1000);
   SerialDelay.start(1000);
 }
 void DJTimerSettings() {
-  if (analogRead(A0) >= 1023 ) {
-    delay(100);
+  if (analogRead(A0) >= 1023) {
+    delay(200);
     lcd.clear();
     djtimer = djtimer + 5;
     minutes = 0;
     seconds = 0;
     lcd.backlight();
     }
-  if (analogRead(A1) >= 1023 ) {
-    delay(100);
+  if (analogRead(A1) >= 1023) {
+    delay(200);
     lcd.clear();
     djtimer = djtimer - 5;
     minutes = 0;
@@ -54,7 +57,7 @@ void DJTimerSettings() {
     lcd.backlight();
   }
   if (analogRead(A2) >= 1023 and minutes >= djtimer ) {
-    delay(100);
+    delay(200);
     lcd.clear();
     minutes = 0;
     seconds = 0;
@@ -76,11 +79,11 @@ void mainDJtimer() {
   DJTimerSettings();
   lcd.setCursor(4,0);
   lcd.print("EVOLVE Music");
-  lcd.setCursor(4,1);
-  lcd.print("DJ Timer: ");
-  lcd.print(djtimer);
   if (SecondsDelay.justFinished()) {
       SecondsDelay.repeat();
+      lcd.setCursor(4,1);
+      lcd.print("DJ Timer: ");
+      lcd.print(djtimer);
       lcd.setCursor(7, 2);
       sprintf(timeline,"%.2dmins", minutes);
       lcd.print(timeline);
@@ -91,36 +94,23 @@ void mainDJtimer() {
       }
       if (minutes >= djtimer){
         if (DJTimerLCD.justFinished()){
-          DJTimerLCD2.start(250);
+          DJTimerLCD2.start(100);
           lcd.clear();
-          lcd.setCursor(5, 2);
+          lcd.setCursor(6, 1);
           lcd.print("NEXT DJ!!");
           lcd.noBacklight();
         }
         if (DJTimerLCD2.justFinished()){
           lcd.clear();
-          DJTimerLCD.start(250);
-          lcd.setCursor(5, 2);
+          DJTimerLCD.start(100);
+          lcd.setCursor(6, 1);
           lcd.print("NEXT DJ!!");
           lcd.backlight();
         }
       }
     }
 }
-void Serial_Delay() {
-  if (SerialDelay.justFinished()) {
-    SerialDelay.repeat();
-    Serial.print("A0: ");
-    Serial.println(analogRead(A0));
-    Serial.print("A1: ");
-    Serial.println(analogRead(A1));
-    Serial.print("A2: ");
-    Serial.println(analogRead(A2));
-    Serial.println(" ");
-  }
-}
 
 void loop() {
-  Serial_Delay();
   mainDJtimer();
 }
